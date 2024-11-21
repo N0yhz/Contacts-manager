@@ -4,3 +4,6 @@ psycopg2-binary
 pydantic[email]
 uvicorn
 python-dotenv
+passlib[bcrypt]
+python-jose[cryptography]
+python-multipart

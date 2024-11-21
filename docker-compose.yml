@@ -10,8 +10,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgresql://n0yhz:module11@db:5432/contacts_db
+    env_file:
+      - .env
 
   db:
     image: postgres:13
