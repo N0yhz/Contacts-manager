@@ -1,6 +1,7 @@
 # goit-pyweb-hw-11
 
-## REST API + FastAPI + CRUD API
+## MODULE 11
+### REST API + FastAPI + CRUD API
 
 **http**
 - http://localhost:8000/docs
@@ -12,3 +13,13 @@
 - Database: contacts_db
 - Username: n0yhz
 - Password: module11
+<br>
+<br>
+
+## MODULE 12
+### Authentication and authorization
+
+**Changes**
+-  Added **"owner_id"** to the **"contacts** in models and  through Docker exec. Using SQL command **ALTER TABLE contacts ADD COLUMN owner_id INTEGER REFERENCES users(id);**
+- Added tablename **users**
+- Tokens have **expire** and **refresh** interval 
