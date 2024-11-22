@@ -20,10 +20,6 @@ try:
 except Exception as e:
     logger.error(f"Error connecting to the database: {e}")
     raise
-# engine = create_engine(SQLALCHEMY_DATABASE_URL)
-# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Base = declarative_base()
 
 def get_db():
     db = SessionLocal()
