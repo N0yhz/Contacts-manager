@@ -71,9 +71,22 @@ def create_contact(
         raise
 
 @app.get("/contacts/", response_model=List[schemas.Contact])
-def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    contacts = crud.get_contacts(db, skip=skip, limit=limit)
-    return contacts
+def read_contacts(
+    skip: int = 0, 
+    limit: int = 100, 
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    try:
+        logger.info(f"Received request to get contacts for user {current_user.id}")
+        contacts = crud.get_contacts(db, user_id=current_user.id, skip=skip, limit=limit)
+        return contacts
+    except SQLAlchemyError as e:
+        logger.error(f"Error getting contacts: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="An unexpected error occured while querying contacts.")
+    except Exception as e:
+        logger.error(f"Error processing request: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="An unexpected error occurred while processing the request.")
 
 @app.get("/contacts/{contact_id}", response_model=schemas.Contact)
 def read_contact(
