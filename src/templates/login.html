@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="shortcut icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
+</head>
+<body>
+    <h1>Login</h1>
+    {% if reset == "success" %}
+        <p style="color: green;">Password reset successful. Please log in with your new password.</p>
+    {% endif %}
+    <form action="/api/auth/token" method="post">
+        <div>
+            <label for="username">Email:</label>
+            <input type="email" id="username" name="username" required>
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div>
+            <button type="submit">Login</button>
+        </div>
+    </form>
+    <p><a href="/api/auth/forgot-password">Forgot Password?</a></p>
+    <p><a href="/api/auth/register">Register</a></p>
+</body>
+</html>

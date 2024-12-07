@@ -4,10 +4,11 @@ psycopg2-binary
 pydantic[email]
 uvicorn
 python-dotenv
-passlib[bcrypt]
+passlib[bcrypt]==1.7.4
 python-jose[cryptography]
 python-multipart
 fastapi-mail
 slowapi
 cloudinary
 redis
+bcrypt==4.0.1

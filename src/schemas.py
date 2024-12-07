@@ -14,45 +14,42 @@ class ContactBase(BaseModel):
 class ContactCreate(ContactBase):
     pass
 
-class Contact(ContactBase):
+class ContactOut(ContactBase):
     id: int
     owner_id: int
     class Config:
         orm_mode = True
 
-
 # User
-class UserModel(BaseModel):
-    username: str
+class UserBase(BaseModel):
     email: EmailStr
+
+class UserCreate(UserBase):
     password: str
 
-class UserDb(UserModel):
+class UserOut(UserBase):
     id: int
-    username: str
     is_verified: bool
     avatar_url: Optional[str] = None
-    refresh_token: Optional[str] = None
-
     class Config:
         orm_mode = True
 
-class UserResponse(BaseModel):
-    user: UserDb
-    detail: str = "User successfully created"
-
-
-
 # Token
-class TokenModel(BaseModel):
+class Token(BaseModel):
     access_token: str
-    refresh_token: str
     token_type: str
 
 class TokenData(BaseModel):
     email: Optional[str] = None
 
+# Password
 
-# Email
-class RequestEmail(BaseModel):
+class PasswordReset(BaseModel):
+    email: EmailStr
+
+class NewPassword(BaseModel):
+    new_password: str
+
+
+class EmailSchema(BaseModel):
     email: EmailStr

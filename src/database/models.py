@@ -10,7 +10,7 @@ class User(Base):
     email = Column(String, unique = True, index = True)
     hashed_password = Column(String)
     is_verified = Column(Boolean, default=False)
-    refresh_token = Column(String, nullable=True)
+    verification_token = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)
     contacts =  relationship('Contact', back_populates='owner')
 

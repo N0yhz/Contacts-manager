@@ -1,49 +1,32 @@
 import logging
+
+from datetime import date, timedelta
+
+from sqlalchemy import or_, extract, and_
+from sqlalchemy.orm import Session
+
 from src.database.models import Contact
 from src.schemas import ContactCreate
-from sqlalchemy.orm import Session
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
-from sqlalchemy import or_, extract, and_
-from datetime import date, timedelta
 
 logger = logging.getLogger(__name__)
 
-def get_contacts(db: Session, user_id: int, skip: int = 0, limit: int = 100):
+def get_contacts(db: Session, user_id: int, skip: int=0, limit: int=100):
     return db.query(Contact).filter(
         Contact.owner_id == user_id
     ).offset(skip).limit(limit).all()
+
+def create_contact(db: Session, contact: ContactCreate, user_id: str):
+    db_contact = Contact(**contact.dict(), owner_id=user_id)
+    db.add(db_contact)
+    db.commit()
+    db.refresh(db_contact)
+    return db_contact
 
 def get_contact(db: Session, user_id: int, contact_id: int):
     return db.query(Contact).filter(
         Contact.id == contact_id,
         Contact.owner_id == user_id
     ).first()
-
-def create_contact(db: Session, contact: ContactCreate, user_id: int):
-    try:
-        logger.info(f"Creating contact: {contact.dict()}")
-        logger.info(f"User ID: {user_id}")
-        db_contact = Contact(**contact.dict(), owner_id=user_id)
-        logger.info(f"Contact object created: {db_contact.__dict__}")
-        db.add(db_contact)
-        logger.info("Contact added to session")
-        db.commit()
-        logger.info("Session committed")
-        db.refresh(db_contact)
-        logger.info(f"Contact refreshed: {db_contact.__dict__}")
-        return db_contact
-    except IntegrityError as e:
-        logger.error(f"IntegrityError while creating contact: {str(e)}")
-        db.rollback()
-        raise
-    except SQLAlchemyError as e:
-        logger.error(f"SQLAlchemyError while creating contact: {str(e)}")
-        db.rollback()
-        raise
-    except Exception as e:
-        logger.error(f"Unexpected error while creating contact: {str(e)}")
-        db.rollback()
-        raise
 
 def update_contact(db: Session, user_id: int, contact_id: int, contact: ContactCreate):
     db_contact = get_contact(db, user_id, contact_id)
@@ -61,7 +44,7 @@ def delete_contact(db: Session, user_id: int, contact_id: int):
         db.commit()
     return db_contact
 
-def search_contacts(db: Session, user_id: int, query: str):
+def search_contacts(db: Session, user_id: int, query: int):
     return db.query(Contact).filter(
         Contact.owner_id == user_id,
         or_(

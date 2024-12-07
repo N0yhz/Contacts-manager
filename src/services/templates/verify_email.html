@@ -42,12 +42,12 @@
     <div class="container">
         <h1>Welcome to Contact Manager!</h1>
         <p>Thank you for registering. Please verify your email address to complete the signup process.</p>
-        <p>
-            <a href="http://localhost:8000/verify/{token}" class="button">Verify Email</a>
-        </p>
+        <a href="{verification_link}" class="button">Verify Email</a>
         <p>If you didn't request this verification, please ignore this email.</p>
         <div class="footer">
             <p>This is an automated message, please do not reply to this email.</p>
+            <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+            <p>{{ verification_link }}</p>
         </div>
     </div>
 </body>
