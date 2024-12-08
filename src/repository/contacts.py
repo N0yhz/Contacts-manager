@@ -50,7 +50,8 @@ def search_contacts(db: Session, user_id: int, query: int):
         or_(
             Contact.first_name.ilike(f"%{query}%"),
             Contact.last_name.ilike(f"%{query}%"),
-            Contact.email.ilike(f"%{query}%")
+            Contact.email.ilike(f"%{query}%"),
+            Contact.phone_number.ilike(f"%{query}%")
         )
     ).all()
 

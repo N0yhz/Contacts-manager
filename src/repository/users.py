@@ -16,6 +16,7 @@ def get_user_by_email(db: Session, email: str):
 def create_user(db: Session, user: UserCreate, verification_token:str):
     hashed_password = get_password_hash(user.password)
     db_user = User(
+        username=user.username,
         email=user.email,
         hashed_password=hashed_password,
         verification_token=verification_token,

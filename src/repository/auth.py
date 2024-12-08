@@ -17,18 +17,19 @@ from src.repository import users as users_repo
 
 load_dotenv()
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 VERIFICATION_TOKEN_EXPIRE_HOURS = 24
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token")
 
 r = redis.Redis(
-    host = os.getenv("REDIS_HOST"),
+    host = os.getenv("REDIS_HOST", "redis"),
     port = int(os.getenv("REDIS_PORT", 6379)),
-    db = 0
+    db = 0,
+    decode_responses=False
 )
 
 def verify_password(plain_password, hashed_password):
@@ -79,7 +80,7 @@ def verify_token(token:str, expected_type: str = "verification") -> Optional[str
         return None
 
 
-async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)) -> User:
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -96,13 +97,14 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
         
     user = r.get(f"user:{email}")
     if user is None:
-        user = await users_repo.get_user_by_email(email, db)
+        user = users_repo.get_user_by_email(db, email)
         if user is None:
             raise credentials_exception
         r.set(f"user:{email}", pickle.dumps(user))
         r.expire(f"user:{email}", 900)  # 15 minutes expiration
+    else:
         user = pickle.loads(user)
-        return user
+    return user
 
 def authenticate_user(db: Session, email: str, password: str) -> Optional[User]:
     user = users_repo.get_user_by_email(db, email)

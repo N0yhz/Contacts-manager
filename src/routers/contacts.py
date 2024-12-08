@@ -1,12 +1,13 @@
 from typing import List
+from datetime import date, timedelta
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 
 from src.database.database import get_db
 from src.database.models import User
 from src.repository import contacts as contacts_repo
-from src.schemas import ContactCreate, ContactOut
-from src.repository.auth import require_verified_user
+from src.schemas import ContactCreate, ContactOut, ContactBase
+from src.repository.auth import require_verified_user, get_current_user
 
 router = APIRouter()
 
@@ -72,15 +73,18 @@ def delete_contact(
 def search_contact(
     query: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(get_current_user)
 ):
     contacts = contacts_repo.search_contacts(db, user_id=current_user.id, query=query)
     return contacts
 
 @router.get("/contacts/upcoming-birthdays", response_model=List[ContactOut])
 def get_upcoming_birthdays(
+    days: int = Query(7, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(get_current_user)
 ):
-    contacts = contacts_repo.get_upcoming_birthdays(db, user_id=current_user.id)
+    today = date.today()
+    end_date = today + timedelta(days=days)
+    contacts = contacts_repo.get_upcoming_birthdays(db, user_id=current_user.id, start_date=today, end_date=end_date)
     return contacts
