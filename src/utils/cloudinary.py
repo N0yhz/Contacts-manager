@@ -1,7 +1,9 @@
 import os
-from src.database.database import logger
 import cloudinary, cloudinary.uploader
+from fastapi import UploadFile
 from dotenv import load_dotenv
+
+from src.database.database import logger
 
 load_dotenv()
 
@@ -11,9 +13,9 @@ cloudinary.config(
     api_secret = os.getenv("CLOUDINARY_API_SECRET")
 )
 
-def upload_avatar(file) -> str:
+def upload_image(file: UploadFile) -> str:
    try:
-       result = cloudinary.uploader.upload(file)
+       result = cloudinary.uploader.upload(file.file)
        logger.info("Avatar uploaded successfully")
        return result["secure_url"]
    except Exception as e:

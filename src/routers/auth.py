@@ -8,8 +8,9 @@ from src.repository.auth import (
     authenticate_user, get_current_user, create_access_token, create_verification_token,
     verify_token, create_password_reset_token,
 )
+from src.utils.cloudinary import upload_image
 
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Form, UploadFile, File
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -118,6 +119,19 @@ async def reset_password(
         )
     users_repo.clear_reset_token(db, email)
     return RedirectResponse(url="/login?reset=success", status_code= status.HTTP_303_SEE_OTHER)
+
+@router.post("/update-avatar", response_model=UserOut)
+async def update_avatar(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+    ):
+        try:
+            avatar_url = upload_image(file)
+            updated_user = users_repo.update_user_avatar(db, current_user.id, avatar_url)
+            return updated_user
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.get("/me", response_model = UserOut)
 async def read_users_me(current_user: User = Depends(get_current_user)):

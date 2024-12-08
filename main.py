@@ -1,6 +1,6 @@
 import uvicorn
 from src.routers import auth, contacts
-from src.limiter import limiter
+from src.utils.limiter import limiter
 
 from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates

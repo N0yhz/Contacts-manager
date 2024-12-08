@@ -1,18 +1,22 @@
 from typing import List
 from datetime import date, timedelta
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Request
 
 from src.database.database import get_db
 from src.database.models import User
 from src.repository import contacts as contacts_repo
-from src.schemas import ContactCreate, ContactOut, ContactBase
+from src.schemas import ContactCreate, ContactOut
 from src.repository.auth import require_verified_user, get_current_user
+from src.utils.limiter import limiter
 
 router = APIRouter()
 
+
 @router.post("/contacts/", response_model=ContactOut)
+@limiter.limit("5/minute") 
 def create_contact(
+    request: Request,
     contact: ContactCreate,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_verified_user)
@@ -20,7 +24,9 @@ def create_contact(
     return contacts_repo.create_contact(db=db, contact=contact, user_id=current_user.id)
 
 @router.get("/contacts/", response_model = List[ContactOut])
+@limiter.limit("5/minute") 
 def read_contacts(
+    request: Request,
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
@@ -30,7 +36,9 @@ def read_contacts(
     return contacts
 
 @router.get("/contacts/{contact_id}", response_model=ContactOut)
+@limiter.limit("5/minute") 
 def read_contact(
+    request: Request,
     contact_id:int,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_verified_user)
@@ -43,7 +51,9 @@ def read_contact(
     return contact
 
 @router.put("/contacts/{contact_id}", response_model=ContactOut)
+@limiter.limit("5/minute") 
 def update_contact(
+    request: Request,
     contact_id: int,
     contact: ContactCreate,
     db: Session = Depends(get_db),
@@ -57,7 +67,9 @@ def update_contact(
     return updated_contact
 
 @router.delete("/contacts/{contact_id}", response_model=ContactOut)
+@limiter.limit("5/minute") 
 def delete_contact(
+    request: Request,
     contact_id: int,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_verified_user),
@@ -70,7 +82,9 @@ def delete_contact(
     return deleted_contact
 
 @router.get("/contacts/search", response_model=List[ContactOut])
+@limiter.limit("10/minute") 
 def search_contact(
+    request: Request,
     query: str,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -79,7 +93,9 @@ def search_contact(
     return contacts
 
 @router.get("/contacts/upcoming-birthdays", response_model=List[ContactOut])
+@limiter.limit("2/minute") 
 def get_upcoming_birthdays(
+    request: Request,
     days: int = Query(7, ge=1, le=365),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
