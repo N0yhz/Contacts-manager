@@ -9,12 +9,6 @@
 - http://localhost:8000/docs
 - http://localhost:8000/contacts
 - http://localhost:8000/contacts/upcoming_birthdays/
-
-**Connecting database**
-- Host: localhost
-- Database: contacts_db
-- Username: n0yhz
-- Password: module11
 <br>
 
 ## MODULE 12
@@ -24,3 +18,20 @@
 -  Added **"owner_id"** to the **"contacts** in models and  through Docker exec. Using SQL command **ALTER TABLE contacts ADD COLUMN owner_id INTEGER REFERENCES users(id);**
 - Added tablename **users**
 - Tokens have **expire** and **refresh** interval 
+<br>
+<br>
+
+## MODULE 13
+###  CORS and Email verification
+
+
+**Changes**
+
+- Change "http" route to **localhost:8000/api/**
+- Added **avatar for users**
+<br>
+
+**Verification**
+- Implement email verification for registered users
+- Added extra **"resend email verification"**
+- Added **Password Reset**
