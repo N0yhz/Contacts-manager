@@ -10,6 +10,7 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - test_db
       - redis
     env_file:
       - .env
@@ -23,6 +24,15 @@ services:
     ports:
      - "5432:5432"
   
+  test_db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=n0yhz
+      - POSTGRES_PASSWORD=module11
+      - POSTGRES_TEST_DB=test_db
+    ports:
+     - "7654:7654"
+
   redis:
     image: redis:alpine
     ports:

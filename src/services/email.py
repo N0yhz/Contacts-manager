@@ -1,3 +1,26 @@
+"""
+Email Service Module
+
+This module provides functionality for sending verification and password reset emails.
+
+Dependencies:
+    - os: For environment variable access
+    - logging: For logging information and errors
+    - dotenv: For loading environment variables
+    - pydantic: For email validation
+    - fastapi_mail: For email sending functionality
+    - jinja2: For email template rendering
+
+Functions:
+    - validate_email_config: Validate required email configuration variables
+    - send_verification_email: Send a verification email to a user
+    - send_password_reset_email: Send a password reset email to a user
+
+Configuration:
+    - Loads email configuration from environment variables
+    - Sets up Jinja2 environment for email templates
+
+"""
 import os 
 import logging
 from dotenv import load_dotenv
@@ -11,6 +34,12 @@ load_dotenv()
 
 
 def validate_email_config():
+    """
+    Validate that all required email configuration variables are set.
+
+    :raises ValueError: If any required configuration variable is missing
+    
+    """
     required_vars = [
         "MAIL_USERNAME", "MAIL_PASSWORD", "MAIL_FROM",
         "MAIL_PORT", "MAIL_SERVER", "MAIL_FROM_NAME"
@@ -47,6 +76,16 @@ template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = Environment(loader=FileSystemLoader(template_dir))
 
 async def send_verification_email(email: EmailStr, token: str):
+    """
+    Send a verification email to the user.
+
+    :param email: The recipient's email address
+    :type email: EmailStr
+    :param token: The verification token
+    :type token: str
+    :raises Exception: If there's an error sending the email
+    
+    """
     try:
         logger.info(f"Attemping to send verification email to {email}")
 
@@ -69,6 +108,16 @@ async def send_verification_email(email: EmailStr, token: str):
         raise
 
 async def send_password_reset_email(email: EmailStr, token: str):
+    """
+    Send a password reset email to the user.
+
+    :param email: The recipient's email address
+    :type email: EmailStr
+    :param token: The password reset token
+    :type token: str
+    :raises Exception: If there's an error sending the email
+    
+    """
     try:
         logger.info(f"Attemping to send password reset email to {email}")
 
