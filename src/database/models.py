@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from src.database.database import Base
+from src.database.database import Base, engine
 class User(Base):
     __tablename__ = "users"
     __table_args__ = {'extend_existing': True}
@@ -26,3 +26,5 @@ class Contact(Base):
     additional_data = Column(String, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", back_populates="contacts")
+
+Base.metadata.create_all(bind=engine)

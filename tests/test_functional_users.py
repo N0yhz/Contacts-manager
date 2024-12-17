@@ -1,53 +1,13 @@
-import pytest
-import sys
 import os
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from fastapi.testclient import TestClient
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
+from tests.confests import TestingSessionLocal
 
-from main import app
-from src.database.database import get_db
-from src.database.models import Base
 from src.repository import auth as auth_repo
 from src.repository import users as users_repo
 
-SQLALCHEMY_DATABASE_URL = "postgresql://n0yhz:module11@db:7654/test_db"
-
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    connect_args={"check_same_thread": False},
-    poolclass=StaticPool  # use a connection pool for testing to speed up tests
-)
-
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-@pytest.fixture(scope="module")
-def session():
-
-    Base.metadata.create_all(bind=engine)
-    db = TestingSessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-@pytest.fixture(scope="module")
-def test_client(session):
-    def override_get_db():
-        try: 
-            yield session
-        finally:
-            session.close()
-
-    app.dependency_overrides[get_db] = override_get_db
-    yield TestClient(app)
-
-@pytest.fixture(scope="function")
-def user():
-    return {"username": "testuser", "email": "test@example.com", "password": "testpassword",}
+test_user = {"username": "testuser", "email": "test@example.com", "password": "testpassword",}
 
 def test_create_user(client, user):
     response =  client.post("/api/auth/register", json=user)
