@@ -82,6 +82,7 @@ def create_user(db: Session, user: UserCreate, verification_token:str):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    print(f"User created with ID: {db_user.id}")
     return db_user
 
 def verify_user(db: Session, email:str):

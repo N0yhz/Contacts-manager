@@ -64,6 +64,11 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     verification_token = create_verification_token(user.email)
     new_user = users_repo.create_user(db=db, user=user, verification_token=verification_token)
     await send_verification_email(new_user.email, verification_token)
+
+    if new_user.id is None:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="User ID not set") 
+    print(f"Response user id: {new_user.id}")
+
     return new_user
 
 @router.post("/token", response_model=Token)

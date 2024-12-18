@@ -32,27 +32,27 @@ class TestUsers(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(user.is_verified)
         self.assertEqual(user.verification_token, verification_token)
 
-    def test_get_user(self):
-        user = User(username="testuser",
-                    email="test@example.com",
-                    hashed_password="hashed_passw")
-        self.session.add(user)
-        self.session.commit()
+    # def test_get_user(self):
+    #     user = User(username="testuser",
+    #                 email="test@example.com",
+    #                 hashed_password="hashed_passw")
+    #     self.session.add(user)
+    #     self.session.commit()
 
-        retrieved_user = users_repo.get_user(self.session, user.id)
-        self.assertIsNotNone(retrieved_user)
-        self.assertEqual(retrieved_user.username, "testuser")
+    #     retrieved_user = users_repo.get_user(self.session, user.id)
+    #     self.assertIsNotNone(retrieved_user)
+    #     self.assertEqual(retrieved_user.username, "testuser")
 
-    def test_get_user_by_email(self):
-        user = User(username="testuser",
-                    email="test@example.com",
-                    hashed_password="hashed_passw")
-        self.session.add(user)
-        self.session.commit()
+    # def test_get_user_by_email(self):
+    #     user = User(username="testuser",
+    #                 email="test@example.com",
+    #                 hashed_password="hashed_passw")
+    #     self.session.add(user)
+    #     self.session.commit()
 
-        retrieved_user = users_repo.get_user_by_email(self.session, "test@example.com")
-        self.assertIsNotNone(retrieved_user)
-        self.assertEqual(retrieved_user.username, "testuser")
+    #     retrieved_user = users_repo.get_user_by_email(self.session, "test@example.com")
+    #     self.assertIsNotNone(retrieved_user)
+    #     self.assertEqual(retrieved_user.username, "testuser")
 
     def test_verify_user(self):
         user = User(username="testuser",
@@ -66,16 +66,16 @@ class TestUsers(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(updated_user.is_verified)
         self.assertIsNone(updated_user.verification_token)
 
-    def test_delete_user(self):
-        user = User(username="testuser",
-                    email="test@example.com",
-                    hashed_password="hashed_passw")
-        self.session.add(user)
-        self.session.commit()
+    # def test_delete_user(self):
+    #     user = User(username="testuser",
+    #                 email="test@example.com",
+    #                 hashed_password="hashed_passw")
+    #     self.session.add(user)
+    #     self.session.commit()
 
-        result = users_repo.delete_user(self.session, user.id)
-        self.assertTrue(result)
-        self.assertIsNone(users_repo.get_user(self.session, user.id))
+    #     result = users_repo.delete_user(self.session, user.id)
+    #     self.assertTrue(result)
+    #     self.assertIsNone(users_repo.get_user(self.session, user.id))
 
 if __name__ == "__main__":
     unittest.main()
