@@ -35,3 +35,17 @@
 - Implement email verification for registered users
 - Added extra **"resend email verification"**
 - Added **Password Reset**
+
+## MODULE 14
+### Documentation
+
+ - fully worked
+
+<br>
+### Unittest
+ - works perfectly
+
+<br>
+### Pytest (functional test)
+ - defedf
+ = **pytest-cov**: 
