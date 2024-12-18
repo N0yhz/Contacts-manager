@@ -37,15 +37,17 @@
 - Added **Password Reset**
 
 ## MODULE 14
-### Documentation
+### Documentation/Uittest/Pytest
 
+**Documentation**
  - fully worked
-
 <br>
-### Unittest
+<br>
+
+**Unittest**
  - works perfectly
-
 <br>
-### Pytest (functional test)
+<br>
+**Pytest (functional test)**
  - defedf
- = **pytest-cov**: 
+ - **pytest-cov**: 
