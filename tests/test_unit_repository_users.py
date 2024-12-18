@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock
 from sqlalchemy.orm import Session
 
-from src.database.models import User, Contact
+from src.database.models import User
 from src.schemas import UserCreate
 from src.repository import users as users_repo
 
