@@ -38,16 +38,15 @@
 
 ## MODULE 14
 ### Documentation/Uittest/Pytest
-
+<br>
 **Documentation**
  - fully worked
-<br>
 <br>
 
 **Unittest**
  - works perfectly
 <br>
-<br>
+
 **Pytest (functional test)**
  - defedf
- - **pytest-cov**: 
+ - **pytest-cov** 
