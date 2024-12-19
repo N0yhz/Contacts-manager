@@ -1,10 +1,10 @@
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from src.database.database import Base, engine
-
 class User(Base):
     __tablename__ = "users"
-    
+    __table_args__ = {'extend_existing': True}
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, index=True)
     email = Column(String, unique = True, index = True)
