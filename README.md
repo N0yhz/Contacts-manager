@@ -48,5 +48,5 @@
 <br>
 
 **Pytest (functional test)**
- - defedf
+ - in process(getting errors)
  - **pytest-cov** 
