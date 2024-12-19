@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  web:
+  app:
     build: .
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
@@ -11,6 +11,8 @@ services:
     depends_on:
       - db
       - redis
+    links:
+     - db
     env_file:
       - .env
 
@@ -22,7 +24,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     ports:
      - "5432:5432"
-  
+
   redis:
     image: redis:alpine
     ports:
