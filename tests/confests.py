@@ -57,3 +57,16 @@ def client():
 @pytest.fixture(scope="function")
 def user():
     return {"username": "testuser", "email": "test@example.com", "password": "testpassword"}
+
+@pytest.fixture()
+def get_token():
+    token = auth_repo.create_access_token(data={"sub": test_user["email"]})
+    return token
+
+@pytest.fixture() 
+def mock_redis(): 
+    mock_redis_client = Mock() 
+    mock_redis_client.get.return_value = None 
+    mock_redis_client.set.return_value = True 
+    mock_redis_client.expire.return_value = True 
+    return mock_redis_client

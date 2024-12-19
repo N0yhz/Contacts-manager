@@ -66,16 +66,5 @@ class TestUsers(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(updated_user.is_verified)
         self.assertIsNone(updated_user.verification_token)
 
-    # def test_delete_user(self):
-    #     user = User(username="testuser",
-    #                 email="test@example.com",
-    #                 hashed_password="hashed_passw")
-    #     self.session.add(user)
-    #     self.session.commit()
-
-    #     result = users_repo.delete_user(self.session, user.id)
-    #     self.assertTrue(result)
-    #     self.assertIsNone(users_repo.get_user(self.session, user.id))
-
 if __name__ == "__main__":
     unittest.main()
