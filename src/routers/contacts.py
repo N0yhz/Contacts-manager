@@ -30,7 +30,7 @@ from src.database.database import get_db
 from src.database.models import User
 from src.repository import contacts as contacts_repo
 from src.schemas import ContactCreate, ContactOut
-from src.repository.auth import require_verified_user, get_current_user
+from src.repository.auth import auth_service
 from src.utils.limiter import limiter
 
 router = APIRouter()
@@ -42,7 +42,7 @@ def create_contact(
     request: Request,
     contact: ContactCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(auth_service.require_verified_user)
 ):
     """
     Create a new contact for the current user.
@@ -68,7 +68,7 @@ def read_contacts(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(auth_service.require_verified_user)
 ):
     """
     Retrieve all contacts for the current user, with optional pagination.
@@ -96,7 +96,7 @@ def read_contact(
     request: Request,
     contact_id:int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(auth_service.require_verified_user)
 ):
     """
     Retrieve details of a specific contact.
@@ -128,7 +128,7 @@ def update_contact(
     contact_id: int,
     contact: ContactCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user)
+    current_user: User = Depends(auth_service.require_verified_user)
 ):
     """
     Update a specific contact's details.
@@ -161,7 +161,7 @@ def delete_contact(
     request: Request,
     contact_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_verified_user),
+    current_user: User = Depends(auth_service.require_verified_user),
 ):
     """
     Delete a specific contact.
@@ -192,7 +192,7 @@ def search_contact(
     request: Request,
     query: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(auth_service.get_current_user)
 ):
     """
     Search contacts by a query string.
@@ -218,7 +218,7 @@ def get_upcoming_birthdays(
     request: Request,
     days: int = Query(7, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(auth_service.get_current_user)
 ):
     """
     Retrieve contacts with upcoming birthdays within the specified number of days.

@@ -28,10 +28,7 @@ from src.database.models import User
 from src.schemas import Token, UserCreate, UserOut, EmailSchema
 from src.services.email import send_verification_email, send_password_reset_email
 from src.repository import users as users_repo
-from src.repository.auth import (
-    authenticate_user, get_current_user, create_access_token, create_verification_token,
-    verify_token, create_password_reset_token,
-)
+from src.repository.auth import auth_service
 from src.services.cloudinary import upload_image
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request, Form, UploadFile, File
@@ -61,7 +58,7 @@ async def register_user(user: UserCreate, db: Session = Depends(get_db)):
     if db_user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail = "Email already registered")
-    verification_token = create_verification_token(user.email)
+    verification_token = auth_service.create_verification_token(user.email)
     new_user = users_repo.create_user(db=db, user=user, verification_token=verification_token)
     await send_verification_email(new_user.email, verification_token)
 
@@ -85,14 +82,14 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     :raises HTTPException: If authentication fails.
     
     """
-    user = authenticate_user(db, form_data.username, form_data.password)
+    user = auth_service.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail = "Incorrect username or password",
                             headers = {"WWW-Authenticate": "Bearer"},
                             )
 
-    access_token = create_access_token(data={"sub": user.email})
+    access_token = auth_service.create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.get("/verify/{token}")
@@ -109,7 +106,7 @@ async def verify_email(token: str, db: Session = Depends(get_db)):
     :raises HTTPException: If the token is invalid or user not found.
     
     """
-    email= verify_token(token)
+    email= auth_service.verify_token(token)
     if not email:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail = "Invalid or expired token",
@@ -144,7 +141,7 @@ async def resend_verification(email_schema: EmailSchema, db: Session = Depends(g
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail = "Email is already verified",
                             )
-    verification_token = create_verification_token(user.email)
+    verification_token = auth_service.create_verification_token(user.email)
     users_repo.update_verification_token(db, user.email, verification_token)
     await send_verification_email(user.email, verification_token)
     return {"message": "Verification email resent successfully"}
@@ -179,7 +176,7 @@ async def forgot_password(email_schema: EmailSchema, db: Session = Depends(get_d
     """
     user = users_repo.get_user_by_email(db, email_schema.email)
     if user:
-        reset_token = create_password_reset_token(email_schema.email)
+        reset_token = auth_service.create_password_reset_token(email_schema.email)
         users_repo.update_reset_token(db, email_schema.email, reset_token)
         await send_password_reset_email(email_schema.email, reset_token)
     return {"message": "If the email exists, a password reset link will be sent"}
@@ -231,7 +228,7 @@ async def reset_password(
             {"request": request, "token": token, "error": "Passwords do not match"}
         )
 
-    email = verify_token(token, expected_type = "password_reset")
+    email = auth_service.verify_token(token, expected_type = "password_reset")
     if not email:
         return templates.TemplateResponse(
             "reset_password.html",
@@ -251,7 +248,7 @@ async def reset_password(
 async def update_avatar(
     file: UploadFile = File(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(auth_service.get_current_user)
     ):
         """
         Update the user's avatar image.
@@ -276,7 +273,7 @@ async def update_avatar(
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.get("/me", response_model = UserOut)
-async def read_users_me(current_user: User = Depends(get_current_user)):
+async def read_users_me(current_user: User = Depends(auth_service.get_current_user)):
     """
     Retrieve the details of the currently authenticated user.
 

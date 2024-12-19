@@ -13,3 +13,7 @@ cloudinary
 redis
 bcrypt==4.0.1
 asyncio
+httpx
+pytest
+pytest-asyncio
+aiosqlite

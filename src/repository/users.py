@@ -26,7 +26,7 @@ import logging
 from sqlalchemy.orm import Session
 from src.database.models import User, Contact
 from src.schemas import UserCreate
-from src.repository.auth import get_password_hash
+from src.repository.auth import auth_service
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +71,7 @@ def create_user(db: Session, user: UserCreate, verification_token:str):
     :rtype: User
     
     """
-    hashed_password = get_password_hash(user.password)
+    hashed_password = auth_service.get_password_hash(user.password)
     db_user = User(
         username=user.username,
         email=user.email,
@@ -202,7 +202,7 @@ def update_password(db: Session, email:str, new_password: str):
     """
     user = db.query(User).filter(User.email == email).first()
     if user:
-        user.hashed_password = get_password_hash(new_password)
+        user.hashed_password = auth_service.get_password_hash(new_password)
         db.commit()
         db.refresh(user)
     return user
